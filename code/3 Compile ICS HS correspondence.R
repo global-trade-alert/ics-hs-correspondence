@@ -204,6 +204,29 @@ main.products = main.products[order(-main.products$trade.value),]
 main.products = main.products$hs6[1:top.threshold]
 rm(trade.data, parameter.choice.trade.base)
 
+# top 500 converage
+import.coverage=aggregate(trade.value ~i.un , subset(trade.data, i.un %in% countries & hs6 %in% main.products ), sum)
+import.coverage=merge(import.coverage, aggregate(trade.value ~i.un , subset(trade.data, i.un %in% countries ), sum), by="i.un", all=T)
+import.coverage$share.covered=import.coverage$trade.value.x/import.coverage$trade.value.y
+sum(import.coverage$trade.value.x, na.rm=T)/sum(import.coverage$trade.value.y)
+
+export.coverage=aggregate(trade.value ~a.un , subset(trade.data, a.un %in% countries & hs6 %in% main.products ), sum)
+export.coverage=merge(export.coverage, aggregate(trade.value ~a.un , subset(trade.data, a.un %in% countries ), sum), by="a.un", all=T)
+export.coverage$share.covered=export.coverage$trade.value.x/export.coverage$trade.value.y
+sum(export.coverage$trade.value.x, na.rm=T)/sum(export.coverage$trade.value.y, rm.na=T)
+
+
+## coverage of converted HS codes
+import.coverage=aggregate(trade.value ~i.un , subset(trade.data, i.un %in% countries & hs6 %in% complete$hs.code ), sum)
+import.coverage=merge(import.coverage, aggregate(trade.value ~i.un , subset(trade.data, i.un %in% countries ), sum), by="i.un", all=T)
+import.coverage$share.covered=import.coverage$trade.value.x/import.coverage$trade.value.y
+sum(import.coverage$trade.value.x, na.rm=T)/sum(import.coverage$trade.value.y)
+
+export.coverage=aggregate(trade.value ~a.un , subset(trade.data, a.un %in% countries & hs6 %in% complete$hs.code ), sum)
+export.coverage=merge(export.coverage, aggregate(trade.value ~a.un , subset(trade.data, a.un %in% countries ), sum), by="a.un", all=T)
+export.coverage$share.covered=export.coverage$trade.value.x/export.coverage$trade.value.y
+sum(export.coverage$trade.value.x, na.rm=T)/sum(export.coverage$trade.value.y, rm.na=T)
+
 
 ## HS codes without assigned ICS codes:
 unassigned.hs.codes = main.products[!(main.products %in% complete$hs.code)]
@@ -216,6 +239,21 @@ complete = rbind(complete, data.frame(ics.code=subset(added.hs.codes, is.na(ics.
 
 
 complete = aggregate(source ~ ics.code + hs.code, complete, function(x) paste(x, collapse = ";"))
+
+## coverage of converted HS codes
+import.coverage=aggregate(trade.value ~i.un , subset(trade.data, i.un %in% countries & hs6 %in% complete$hs.code ), sum)
+import.coverage=merge(import.coverage, aggregate(trade.value ~i.un , subset(trade.data, i.un %in% countries ), sum), by="i.un", all=T)
+import.coverage$share.covered=import.coverage$trade.value.x/import.coverage$trade.value.y
+sum(import.coverage$trade.value.x, na.rm=T)/sum(import.coverage$trade.value.y)
+import.coverage=merge(import.coverage, country.names[,c("un_code","name")], by.x="i.un", by.y="un_code")
+
+
+export.coverage=aggregate(trade.value ~a.un , subset(trade.data, a.un %in% countries & hs6 %in% complete$hs.code ), sum)
+export.coverage=merge(export.coverage, aggregate(trade.value ~a.un , subset(trade.data, a.un %in% countries ), sum), by="a.un", all=T)
+export.coverage$share.covered=export.coverage$trade.value.x/export.coverage$trade.value.y
+sum(export.coverage$trade.value.x, na.rm=T)/sum(export.coverage$trade.value.y, rm.na=T)
+export.coverage=merge(export.coverage, country.names[,c("un_code","name")], by.x="a.un", by.y="un_code")
+
 
 ##############################################################################################
 ## 5. Save ICS-HS correspondence
