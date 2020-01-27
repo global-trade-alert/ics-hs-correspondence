@@ -17,7 +17,7 @@ library(openxlsx)
 
 gta_setwd()
 path = "0 projects/36 ICS-HS correspondence/"
-probability.threshold=.9 #for the app results
+probability.threshold=.9 #for the app results [JF: I think .9 is on the very high side. Should we ask someone to check sensibility of .9-.7 choices?]
 
 ics.codes <- gtalibrary::ics.names
 raw.ics = ics.codes # This 'raw ICS table' is just for checking the ICS code descriptions.
