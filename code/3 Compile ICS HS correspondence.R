@@ -152,6 +152,11 @@ complete$hs.code <- as.numeric(as.character(complete$hs.code))
 ## 2c Unmatched ICS codes
 unmatched.ics.codes = unique(subset(products.ics, !(ics.code %in% complete$ics.code))$ics.code)
 
+## these are the still unmatched ICS codes
+unmatched.ics.codes[grepl("(^0?[137])|(.01$)|(.99$)",unmatched.ics.codes)==F]
+ics.names$ics.description[ics.names$ics.code %in% unmatched.ics.codes[grepl("(^0?[137])|(.01$)|(.99$)",unmatched.ics.codes)==F]]
+
+
 
 ## 2d Cross-check HS code assignment across sources
 test = subset(complete,ics.code %in% subset(aggregate(source ~ ics.code, complete, function(x) length(unique(x))), source > 1)$ics.code)
